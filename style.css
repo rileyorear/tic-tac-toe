@@ -1,0 +1,26 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+}
+
+.container {
+  height: 500px;
+  width: 500px;
+  border: 2px solid black;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.container div {
+  border: 2px solid black;
+}
