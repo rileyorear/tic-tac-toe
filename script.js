@@ -8,7 +8,7 @@ const Player = (sign) => {
   return { getSign };
 };
 
-const gameBoard = (() => {
+const gameboard = (() => {
   const board = ["", "", "", "", "", "", "", "", ""];
 
   const setSquare = (index, sign) => {
@@ -30,6 +30,47 @@ const gameBoard = (() => {
   return { setSquare, getSquare, reset };
 })();
 
+const displayController = (() => {
+  const squareElements = document.querySelectorAll(".square");
+  const messageElement = document.getElementById("message");
+  const restartButton = document.getElementById("restart-button");
+
+  squareElements.forEach((square) =>
+    square.addEventListener("click", (e) => {
+      if (gameController.getIsOver() || e.target.textContent !== "") return;
+      gameController.playRound(parseInt(e.target.dataset.index));
+      updateGameboard();
+    })
+  );
+
+  restartButton.addEventListener("click", (e) => {
+    gameboard.reset();
+    gameController.reset();
+    updateGameboard();
+    setMessageElement("Player O's turn");
+  });
+
+  const updateGameboard = () => {
+    for (let i = 0; i < squareElements.length; i++) {
+      squareElements[i].textContent = gameboard.getSquare(i);
+    }
+  };
+
+  const setResultMessage = (winner) => {
+    if (winner === "Draw") {
+      setMessageElement("It's a draw!");
+    } else {
+      setMessageElement(`Player ${winner} has won!`);
+    }
+  };
+
+  const setMessageElement = (message) => {
+    messageElement.textContent = message;
+  };
+
+  return { setResultMessage, setMessageElement };
+})();
+
 const gameController = (() => {
   const playerX = Player("X");
   const playerO = Player("O");
@@ -37,7 +78,7 @@ const gameController = (() => {
   let isOver = false;
 
   const playRound = (squareIndex) => {
-    gameBoard.setSquare(squareIndex, getCurrentPlayerSign());
+    gameboard.setSquare(squareIndex, getCurrentPlayerSign());
     if (checkWinner(squareIndex)) {
       displayController.setResultMessage(getCurrentPlayerSign());
       isOver = true;
@@ -55,7 +96,7 @@ const gameController = (() => {
   };
 
   const getCurrentPlayerSign = () => {
-    return round % 2 === 1 ? playerX.getSign() : playerO.getSign();
+    return round % 2 === 1 ? playerO.getSign() : playerX.getSign();
   }
 
   const checkWinner = (squareIndex) => {
@@ -74,7 +115,7 @@ const gameController = (() => {
     .filter((combination) => combination.includes(squareIndex))
     .some((possibleCombination) =>
       possibleCombination.every(
-        (index) => gameBoard.getSquare(index) === getCurrentPlayerSign()
+        (index) => gameboard.getSquare(index) === getCurrentPlayerSign()
       )
     );
   };
